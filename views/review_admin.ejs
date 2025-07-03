@@ -11,34 +11,44 @@
   </nav>
 
   <div class="container mt-4">
-    <h2 class="mb-3">Client Reviews (<%= reviews.length %>)</h2>
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Review</th>
-          <th>Rating</th>
-          <th>Date</th>
-          <th>Delete Reviews</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% reviews.forEach(r => { %>
-        <tr>
-          <td><%= r.name %></td>
-          <td><%= r.email %></td>
-          <td><%= r.review %></td>
-          <td><%= r.rating %></td>
-          <td><%= r.date.toLocaleString() %></td>
-          <td><form action="/admin/delete/<%= r._id %>" method="POST" onsubmit="return confirm('Delete this review?');">
-              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-              </form>
-          </td>
-        </tr>
-      <% }) %>
-      </tbody>
-    </table>
-  </div>
+  <h2 class="mb-3">Client Reviews (<%= reviews.length %>)</h2>
+
+  <% reviews.forEach(function (r) { %>
+    <div id="review-<%= r._id %>" class="card mb-3 p-3 shadow-sm">
+      <h5><%= r.name %> (<%= r.rating %>★)</h5>
+      <p><%= r.review %></p>
+      <small><%= r.email %> | <%= new Date(r.date).toLocaleString() %></small>
+
+      <div class="mt-3">
+        <!-- Delete button -->
+        <form action="/admin/delete/<%= r._id %>" method="POST" class="d-inline"
+              onsubmit="return confirm('Delete this review?');">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+        <!-- Download-as-image button -->
+        <button onclick="downloadReviewAsImage('<%= r._id %>')" class="btn btn-success btn-sm">
+          Download as Image
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+  <!-- html2canvas CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  function downloadReviewAsImage(reviewId) {
+    const reviewCard = document.getElementById(`review-${reviewId}`);
+
+    html2canvas(reviewCard).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `review-${reviewId}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
+
 </body>
 </html>
