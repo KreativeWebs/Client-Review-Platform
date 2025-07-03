@@ -6,6 +6,8 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 const fs = require('fs');
+const session = require('express-session');
+const ensureAdmin = require('./middleware/auth');
 
 require('dotenv').config();          // 1) load .env vars
 const mongoose = require('mongoose'); // 2) bring Mongoose in
@@ -88,5 +90,43 @@ app.post('/submit-review', async (req, res) => {
 
 app.get('/thank-you', (req, res) => {
   res.render('thank_you');
+});
+
+// --- sessions ---
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'change_this_secret',
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+// ─── Admin login routes ────────────────────────────
+
+// GET login form  →  views/review_admin_login.ejs
+app.get('/admin/login', (req, res) => {
+  res.render('review_admin_login', { error: null });
+});
+
+// POST login (simple password from .env)
+app.post('/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === process.env.ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    return res.redirect('/admin');
+  }
+  res.render('review_admin_login', { error: 'Wrong password' });
+});
+
+// LOG‑OUT
+app.get('/admin/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/admin/login'));
+});
+
+// ─── Protected dashboard ───────────────────────────
+
+app.get('/admin', ensureAdmin, async (req, res) => {
+  const reviews = await Review.find().sort({ date: -1 });
+  res.render('review_admin', { reviews });   // ← views/review_admin.ejs
 });
 
