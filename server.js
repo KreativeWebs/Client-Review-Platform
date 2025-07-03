@@ -118,6 +118,17 @@ app.post('/admin/login', (req, res) => {
   res.render('review_admin_login', { error: 'Wrong password' });
 });
 
+app.post('/admin/delete/:id', ensureAdmin, async (req, res) => {
+  try {
+    await Review.findByIdAndDelete(req.params.id);
+    res.redirect('/admin');
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).send('Delete failed');
+  }
+});
+
+
 // LOG‑OUT
 app.get('/admin/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/admin/login'));

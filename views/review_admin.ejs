@@ -20,6 +20,7 @@
           <th>Review</th>
           <th>Rating</th>
           <th>Date</th>
+          <th>Delete Reviews</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +31,10 @@
           <td><%= r.review %></td>
           <td><%= r.rating %></td>
           <td><%= r.date.toLocaleString() %></td>
+          <td><form action="/admin/delete/<%= r._id %>" method="POST" onsubmit="return confirm('Delete this review?');">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+          </td>
         </tr>
       <% }) %>
       </tbody>
