@@ -2,40 +2,164 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="shortcut icon" href="/images/WhatsApp_Image_2025-03-05_at_08.37.29_642573f6-removebg-preview.png" type="image/x-icon">
   <title>Macview Review Platform</title>
+
+  <!-- Bootstrap 5 (via CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
   <link rel="stylesheet" href="/CSS/style.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <h2 class="mb-4">Macview Review Platform</h2>
-    <form method="POST" action="/submit-review">
-      <div class="mb-3">
-        <label for="name" class="form-label">Full Name</label>
-        <input type="text" class="form-control" name="name" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email Address</label>
-        <input type="email" class="form-control" name="email" required>
-      </div>
-      <div class="mb-3">
-        <label for="review" class="form-label">Your Review</label>
-        <textarea class="form-control" name="review" rows="4" required></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="rating" class="form-label">Rating</label>
-        <select class="form-select" name="rating" required>
-          <option value="">Select a rating</option>
-          <option value="5">5 - Excellent</option>
-          <option value="4">4 - Good</option>
-          <option value="3">3 - Average</option>
-          <option value="2">2 - Poor</option>
-          <option value="1">1 - Terrible</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit Review</button>
-    </form>
+<body class="d-flex align-items-center" style="min-height:100vh; background-image: url('/images/Burj Khalifa - Dubai, United Arab Emirates.jpeg'); background-size: cover; background-attachment: fixed;">
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-6">
+
+        <!-- Card -->
+         
+        <div class="card review-card shadow-sm border-0">
+
+          <div class="card-body p-4 align-items-center" style="min-height: 50vh;">
+            <h1 class="h4 text-center mb-4">
+              Tell Us How We Did
+            </h1>
+
+            <!-- Review Form -->
+            <form method="POST" action="/submit-review" class="needs-validation" novalidate>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Full Name</label>
+                <input name="name" type="text" class="form-control" required>
+                <div class="invalid-feedback">Please enter your name.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input name="email" type="email" class="form-control" required>
+                <div class="invalid-feedback">Valid email required.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Your Review</label>
+                <textarea name="review" rows="4" class="form-control" required></textarea>
+                <div class="invalid-feedback">Please share your experience.</div>
+              </div>
+
+              <!-- ⭐ STAR RATING -->
+<div class="mb-4">
+  <label class="form-label fw-semibold d-block">Rating</label>
+
+  <div id="star-wrapper">
+    <!-- the real value sent to server -->
+    <input type="hidden" name="rating" id="rating-value" required>
+
+    <!-- 5 clickable stars -->
+    <% for (let i = 1; i <= 5; i++) { %>
+      <i class="fa-star fa-regular fs-2 star"
+         data-value="<%= i %>"
+         style="cursor:pointer; color:#ccc;"></i>
+    <% } %>
+
+    <!-- validation message -->
+     <input type="hidden" name="rating" id="rating-value" required>
+    <div class="invalid-feedback">Select a rating.</div>
   </div>
+</div>
+
+
+              <button type="submit" class="btn btn-primary w-100">
+                Submit Review
+              </button>
+
+            </form><!-- /form -->
+
+          </div><!-- /card-body -->
+        </div><!-- /card -->
+
+        <!-- Success flash (optional) -->
+        <% if (typeof success !== 'undefined') { %>
+          <div class="alert alert-success text-center mt-3">
+            <%= success %>
+          </div>
+        <% } %>
+
+
+      </div><!-- /col -->
+    </div><!-- /row -->
+  </div><!-- /container -->
+
+  <!-- Bootstrap JS (for client‑side validation) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
+
+  <!-- Client‑side form validation -->
+  <script>
+    (() => {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', evt => {
+          if (!form.checkValidity()) {
+            evt.preventDefault();
+            evt.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+
+  <script>
+(() => {
+  const form        = document.querySelector('.needs-validation');
+  const stars       = document.querySelectorAll('#star-wrapper .star');
+  const ratingInput = document.getElementById('rating-value');
+
+  const paint = value => {
+    stars.forEach(star => {
+      const v = star.getAttribute('data-value');
+      star.classList.remove('fa-solid', 'fa-regular');
+      star.classList.add(value >= v ? 'fa-solid' : 'fa-regular');
+      star.style.color = value >= v ? '#ffc107' : '#ccc';
+    });
+  };
+
+  // Click to select rating
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const val = star.getAttribute('data-value');
+      ratingInput.value = val;
+      ratingInput.setCustomValidity('');  // clear any previous error
+      paint(val);
+    });
+
+    star.addEventListener('mouseenter', () => paint(star.dataset.value));
+    star.addEventListener('mouseleave',  () => paint(ratingInput.value));
+  });
+
+  // Custom validation
+  form.addEventListener('submit', e => {
+    if (!ratingInput.value) {
+      ratingInput.setCustomValidity('invalid'); // trigger invalid-feedback
+    }
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  }, false);
+})();
+</script>
+
+
+
 </body>
 </html>

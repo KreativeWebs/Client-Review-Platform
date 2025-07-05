@@ -137,7 +137,38 @@ app.get('/admin/logout', (req, res) => {
 // ─── Protected dashboard ───────────────────────────
 
 app.get('/admin', ensureAdmin, async (req, res) => {
-  const reviews = await Review.find().sort({ date: -1 });
-  res.render('review_admin', { reviews });   // ← views/review_admin.ejs
+  const search  = req.query.search || '';
+  const rating  = req.query.rating || '';
+  const page    = parseInt(req.query.page, 10) || 1;
+  const perPage = 5;
+
+  let query = {};
+
+  if (rating) query.rating = Number(rating);
+  if (search) {
+    const regex = new RegExp(search, 'i');
+    query.$or = [
+      { name: regex },
+      { email: regex },
+      { review: regex }
+    ];
+  }
+
+  const totalCount = await Review.countDocuments(query);
+  const totalPages = Math.ceil(totalCount / perPage);
+
+  const reviews = await Review.find(query)
+    .sort({ date: -1 })
+    .skip((page - 1) * perPage)
+    .limit(perPage);
+
+  res.render('review_admin', {
+    reviews,
+    search,
+    rating,
+    page,
+    totalPages
+  });
 });
+
 
