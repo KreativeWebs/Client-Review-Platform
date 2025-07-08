@@ -1,0 +1,44 @@
+/* Applied only while capturing */
+.share-card {
+  width: 600px;                 /* fixed width for predictable output */
+  padding: 2.5rem;
+  text-align: center;
+  background: radial-gradient(circle at top left, #004e92, #000428);
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  position: relative;
+}
+
+/* Add big quote mark */
+.share-card::before {
+  content: "❝";
+  font-size: 140px;
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  opacity: 0.15;
+}
+
+/* Traveller name */
+.share-card h3 {
+  font-size: 1.75rem;
+  margin-bottom: .5rem;
+}
+
+/* Star rating (FontAwesome) */
+.share-card .stars i {
+  color: #ffc107;
+  font-size: 1.4rem;
+}
+
+/* Review text */
+.share-card blockquote {
+  font-style: italic;
+  margin: 1rem 0 1.5rem;
+}
+
+/* Company logo in footer */
+.share-card img.logo {
+  width: 100px;
+  opacity: 0.9;
+}
